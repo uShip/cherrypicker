@@ -1,0 +1,46 @@
+name: 'cherrypicker'
+description: 'cherry picks commits from one repository to another'
+inputs:
+  source-repository:
+    description: 'The source repository from which to cherry pick. Ex: myOrg/my-source-repo'
+    required: true
+  commit-sha:
+    description: 'The commit sha to cherry pick. Ex: abcdef0123456789fedcba9876543210abcdef10'
+    required: true
+  source-read-token:
+    description: 'The GitHub personal access token to read from the source repository. Ex: foo_abcdefghi123456789abcdefghi123456789'
+    required: true
+  target-repository:
+    description: 'The target repository to which to cherry pick. Ex: myOrg/my-target-repo'
+    required: true
+  target-branch:
+    description: 'The target branch on which to cherry pick the commit. Ex: main'
+    required: true
+  target-read-write-token:
+    description: 'The GitHub personal access token to read and write to the target repository. Ex: foo_abcdefghi123456789abcdefghi123456789'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: get friendly name
+      id: friendly-name
+      uses: bhowell2/github-substring-action
+      with:
+        value: ${{ inputs.commit-sha }}
+        length_from_start: 7
+    - name: cherry-pick sha from source to target
+      run: |
+        git clone https://${{ inputs.target-read-write-token }}@github.com/${{ inputs.target-repository }}.git ${{ inputs.commit-sha }} &&
+        cd ${{ inputs.commit-sha }} &&
+        git checkout ${{ inputs.target-branch }} &&
+        git checkout -b boilerbot/${{ steps.friendly-name.outputs.substring }} &&
+        git fetch https://${{ inputs.source-read-token }}@github.com/${{ inputs.source-repository }}.git &&
+        git cherry-pick ${{ inputs.commit-sha }} &&
+        git push origin boilerbot/${{ steps.friendly-name.outputs.substring }}
+    - name: create pull request
+      run: |
+        curl -X POST \
+        -H "Accept: application/vnd.github.v3+json" \
+        -H "Authorization: token ${{ inputs.target-read-write-token }}" \
+        https://api.github.com/repos/${{ inputs.target-repository }}/pulls \
+        -d '{ "title": "boilerbot cherry-pick ${{ steps.friendly-name.outputs.substring }}", "head": "boilerbot/${{ steps.friendly-name.outputs.substring }}", "base", "${{ inputs.target-branch }}" }'
