@@ -32,13 +32,21 @@ runs:
     - name: cherry-pick sha from source to target
       shell: bash
       run: |
+        echo Starting clone ... &&
         git clone https://${{ inputs.target-read-write-token }}@github.com/${{ inputs.target-repository }}.git ${{ inputs.commit-sha }} &&
+        echo Clone finished, starting cd ... &&
         cd ${{ inputs.commit-sha }} &&
+        echo cd finished, starting checkout ... &&
         git checkout ${{ inputs.target-branch }} &&
+        echo checkout finished, starting branch creation &&
         git checkout -b boilerbot/${{ steps.friendly-name.outputs.substr }} &&
+        echo branch creation finished, starting fetch &&
         git fetch https://${{ inputs.source-read-token }}@github.com/${{ inputs.source-repository }}.git &&
+        echo fetch completed, starting cherry pick &&
         git cherry-pick ${{ inputs.commit-sha }} &&
-        git push origin boilerbot/${{ steps.friendly-name.outputs.substr }}
+        echo cherry pick completed, starting push &&
+        git push origin boilerbot/${{ steps.friendly-name.outputs.substr }} &&
+        echo push completed
 
     - name: create pull request
       shell: bash
