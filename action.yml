@@ -43,6 +43,8 @@ runs:
         echo branch creation finished, starting fetch &&
         git fetch https://${{ inputs.source-read-token }}@github.com/${{ inputs.source-repository }}.git &&
         echo fetch completed, starting cherry pick &&
+        git config user.email "boilerbot@iamabot.com"
+        git config user.name "Boilerbot (Bot)"
         git cherry-pick ${{ inputs.commit-sha }} &&
         echo cherry pick completed, starting push &&
         git push origin boilerbot/${{ steps.friendly-name.outputs.substr }} &&
