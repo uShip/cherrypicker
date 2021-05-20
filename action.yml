@@ -24,11 +24,13 @@ runs:
   steps:
     - name: get friendly name
       id: friendly-name
+      shell: bash
       run: |
         substr=$(echo ${{ inputs.commit-sha }} | cut -c1-7)
         echo ::set-output name=substr::$substr
 
     - name: cherry-pick sha from source to target
+      shell: bash
       run: |
         git clone https://${{ inputs.target-read-write-token }}@github.com/${{ inputs.target-repository }}.git ${{ inputs.commit-sha }} &&
         cd ${{ inputs.commit-sha }} &&
@@ -39,6 +41,7 @@ runs:
         git push origin boilerbot/${{ steps.friendly-name.outputs.substr }}
 
     - name: create pull request
+      shell: bash
       run: |
         curl -X POST \
         -H "Accept: application/vnd.github.v3+json" \
