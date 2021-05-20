@@ -4,8 +4,8 @@ inputs:
   source-repository:
     description: 'The source repository from which to cherry pick. Ex: myOrg/my-source-repo'
     required: true
-  commit-sha:
-    description: 'The commit sha to cherry pick. Ex: abcdef0123456789fedcba9876543210abcdef10'
+  commit-shas:
+    description: 'An array of commit shas to cherry pick. Ex: ["abcdef0123456789fedcba9876543210abcdef10"]'
     required: true
   source-read-token:
     description: 'The GitHub personal access token to read from the source repository. Ex: foo_abcdefghi123456789abcdefghi123456789'
@@ -22,6 +22,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: debug
+      env:
+        DEBUG: ${{ join(inputs.commit-shas, ' ') }}
+      run: echo "$DEBUG"
+      shell: bash
+
     - name: get friendly name
       id: friendly-name
       shell: bash
