@@ -57,4 +57,4 @@ runs:
         -H "Accept: application/vnd.github.v3+json" \
         -H "Authorization: token ${{ inputs.target-read-write-token }}" \
         https://api.github.com/repos/${{ inputs.target-repository }}/pulls \
-        -d '{ "title": "boilerbot cherry-pick ${{ steps.friendly-name.outputs.substr }}", "head": "boilerbot/${{ steps.friendly-name.outputs.substr }}", "base", "${{ inputs.target-branch }}" }'
+        -d '{ "title": "boilerbot cherry-pick ${{ steps.friendly-name.outputs.substr }}", "head": "boilerbot/${{ steps.friendly-name.outputs.substr }}", "base": "${{ inputs.target-branch }}" }'
