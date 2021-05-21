@@ -40,13 +40,13 @@ runs:
     - name: cherry-pick sha from source to target
       shell: bash
       run: |
-        git clone https://${{ inputs.target-read-write-token }}@github.com/${{ inputs.target-repository }}.git ${{ steps.friendly-name.outputs.substr }} &&
-        cd ${{ steps.friendly-name.outputs.substr }} &&
+        git clone https://${{ inputs.target-read-write-token }}@github.com/${{ inputs.target-repository }}.git ${{ inputs.target-repository }}-${{ steps.friendly-name.outputs.substr }} &&
+        cd ${{ inputs.target-repository }}-${{ steps.friendly-name.outputs.substr }} &&
         git checkout ${{ inputs.target-branch }} &&
         git checkout -b boilerbot/${{ steps.friendly-name.outputs.substr }} &&
         git fetch https://${{ inputs.source-read-token }}@github.com/${{ inputs.source-repository }}.git &&
         git config user.email "boilerbot@iamabot.com"
-        git config user.name "Boilerbot (Bot)"
+        git config user.name "Boiler[bot]"
         git cherry-pick ${{ inputs.commit-shas }} &&
         git push origin boilerbot/${{ steps.friendly-name.outputs.substr }}
 
